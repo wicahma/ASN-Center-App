@@ -13,7 +13,7 @@ class Response {
 }
 
 class Rekues {
-  final String baseUrl = "https://simpeg.rembangkab.go.id/asncenter/api/v1/";
+  final String baseUrl = "https://asncenter.rembangkab.go.id/asncenter/api/v1/";
   String downloadDir = '/storage/emulated/0/Download/ASN';
 
   Rekues() {
