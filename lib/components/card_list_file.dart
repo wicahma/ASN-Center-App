@@ -1,4 +1,5 @@
-import 'package:asn_center_app/logic/http_request.dart'; 
+import 'package:asn_center_app/components/modal_webview.dart';
+import 'package:asn_center_app/logic/http_request.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -20,7 +21,6 @@ class CardListFile extends StatefulWidget {
 class _CardListFileState extends State<CardListFile> {
   bool _isLoading = false;
 
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -36,8 +36,7 @@ class _CardListFileState extends State<CardListFile> {
                     scrollable: true,
                     titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
                     title: const Text("Detail File"),
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                    contentPadding: const EdgeInsets.all(0),
                     content: SizedBox(
                       height: MediaQuery.of(context).size.height / 2.5,
                       width: MediaQuery.of(context).size.width,
@@ -47,7 +46,7 @@ class _CardListFileState extends State<CardListFile> {
                           String key =
                               widget.mainData.keys.elementAt(index).toString();
                           String value = widget.mainData[key].toString();
-                          return InkWell(
+                          return ListTile(
                             onLongPress: () async {
                               debugPrint("key: $key");
                               await Clipboard.setData(
@@ -61,14 +60,13 @@ class _CardListFileState extends State<CardListFile> {
                                 ),
                               );
                             },
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.all(0),
-                              title: Text(key.toUpperCase()),
-                              subtitle: Text(value.toString() == "" ||
-                                      value.toString() == "null"
-                                  ? "-"
-                                  : value.toString()),
-                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 0),
+                            title: Text(key.toUpperCase()),
+                            subtitle: Text(value.toString() == "" ||
+                                    value.toString() == "null"
+                                ? "-"
+                                : value.toString()),
                           );
                         },
                       ),
@@ -81,18 +79,32 @@ class _CardListFileState extends State<CardListFile> {
                   top: -25,
                   left: -25,
                   child: Card(
+                      clipBehavior: Clip.antiAlias,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(100)),
                       color: Colors.green.shade200,
-                      child: Padding(
-                        padding: const EdgeInsets.all(30),
-                        child: Icon(
-                          widget.namaFile.contains(".pdf")
-                              ? Icons.picture_as_pdf_outlined
-                              : Icons.image_rounded,
-                          size: 30,
-                          color: Colors.green.shade800,
+                      child: InkWell(
+                        onTap: () {
+                          showModalBottomSheet(
+                              showDragHandle: true,
+                              isScrollControlled: true,
+                              enableDrag: false,
+                              context: context,
+                              builder: (context) => ModalWebview(
+                                    namaFile: widget.namaFile,
+                                  ));
+                        },
+                        splashColor: Colors.green,
+                        child: Padding(
+                          padding: const EdgeInsets.all(30),
+                          child: Icon(
+                            widget.namaFile.contains(".pdf")
+                                ? Icons.picture_as_pdf_outlined
+                                : Icons.image_rounded,
+                            size: 30,
+                            color: Colors.green.shade800,
+                          ),
                         ),
                       )),
                 ),
