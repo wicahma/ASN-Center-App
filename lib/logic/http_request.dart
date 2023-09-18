@@ -11,6 +11,7 @@ class Response {
   dynamic status;
   bool get isSuccess => status == "success" || status == true;
   String? errorMessage;
+  dynamic body;
 }
 
 class Rekues {
@@ -40,14 +41,16 @@ class Rekues {
       );
 
       Map<String, dynamic> res = jsonDecode(response.body);
-
+      
+      getResponse.body = response.body;
       getResponse.status = res['status'];
       getResponse.message = res['message'];
       getResponse.data = res['data'];
 
       return getResponse;
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("Getdata Error : ${e.toString()}");
+      getResponse.errorMessage = e.toString();
       return getResponse;
     }
   }
@@ -86,6 +89,7 @@ class Rekues {
 
       Map<String, dynamic> res = jsonDecode(response.body);
 
+      postResponse.body = response.body;
       postResponse.message = res['message'];
       postResponse.data = res['data'];
       postResponse.status = res['status'];
@@ -112,6 +116,7 @@ class Rekues {
 
       Map<String, dynamic> res = jsonDecode(response.body);
 
+      putResponse.body = response.body;
       putResponse.message = res['message'];
       putResponse.data = res['data'];
       putResponse.status = res['status'];
@@ -119,6 +124,7 @@ class Rekues {
       return putResponse;
     } catch (e) {
       debugPrint(e.toString());
+      putResponse.errorMessage = e.toString();
       return putResponse;
     }
   }
@@ -136,6 +142,7 @@ class Rekues {
 
       Map<String, dynamic> res = jsonDecode(response.body);
 
+      deleteResponse.body = response.body;
       deleteResponse.message = res['message'];
       deleteResponse.data = res['data'];
       deleteResponse.status = res['status'];
@@ -143,6 +150,7 @@ class Rekues {
       return deleteResponse;
     } catch (e) {
       debugPrint(e.toString());
+      deleteResponse.errorMessage = e.toString();
       return deleteResponse;
     }
   }
@@ -181,6 +189,7 @@ class Rekues {
 
       Map<String, dynamic> res = jsonDecode(response.body);
 
+      patchResponse.body = response.body;
       patchResponse.message = res['message'];
       patchResponse.data = res['data'];
       patchResponse.status = res['status'];
@@ -188,6 +197,7 @@ class Rekues {
       return patchResponse;
     } catch (e) {
       debugPrint(e.toString());
+      patchResponse.errorMessage = e.toString();
       return patchResponse;
     }
   }

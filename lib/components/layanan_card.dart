@@ -14,6 +14,7 @@ class LayananCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      clipBehavior: Clip.antiAlias,
       color: Colors.white,
       elevation: 15,
       shadowColor: Colors.grey.withOpacity(0.5),
