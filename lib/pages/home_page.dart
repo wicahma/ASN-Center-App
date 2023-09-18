@@ -6,7 +6,9 @@ import 'package:asn_center_app/logic/http_request.dart';
 import 'package:asn_center_app/logic/storage.dart';
 import 'package:asn_center_app/pages/diklat_struktural_page.dart';
 import 'package:asn_center_app/pages/efile_page.dart';
+import 'package:asn_center_app/pages/kursus_page.dart';
 import 'package:asn_center_app/pages/login_page.dart';
+import 'package:asn_center_app/pages/skp_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,43 +24,49 @@ class _HomePageState extends State<HomePage> {
     const LayananCard(
         title: "Diklat Struktural",
         icon: Icons.book,
-        route: DiklatStrukturalPage())
+        route: DiklatStrukturalPage()),
+    const LayananCard(
+        title: "Kursus", icon: Icons.golf_course_rounded, route: KursusPage()),
+    const LayananCard(
+        title: "SKP", icon: Icons.stacked_bar_chart_rounded, route: SKP())
   ];
   Map<String, dynamic>? _userData;
 
-  void _getUserData() async {
-    String? token = await MainStorage.read("token");
-    debugPrint("token: $token");
+  Future<void> _getUserData() async {
+    try {
+      String? token = await MainStorage.read("token");
+      debugPrint("token: $token");
 
-    final response = await Rekues().getData(
-        url: "profile/data_utama", header: {"Authorization": "$token"});
+      final response = await Rekues().getData(
+          url: "profile/data_utama", header: {"Authorization": "$token"});
 
-    if (!context.mounted) return;
-    if (!response.isSuccess) {
-      String message = response.message.toString();
-      debugPrint(message);
+      if (!context.mounted) return;
+      if (!response.isSuccess) {
+        String message = response.message.toString();
+        throw Exception(message);
+      }
+
+      setState(() {
+        _userData = response.data;
+      });
+      MainStorage.write("data_pengguna", jsonEncode(response.data));
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.redAccent.shade200,
-          content: const Text("Data pengguna gagal diambil!"),
+        const SnackBar(
+          backgroundColor: Colors.lightGreen,
+          content: Text("Data pengguna tersinkronisasi!"),
           showCloseIcon: true,
         ),
       );
-      return;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.redAccent.shade200,
+          content: Text(e.toString().split("Exception: ").last),
+          showCloseIcon: true,
+        ),
+      );
     }
-
-    setState(() {
-      _userData = response.data;
-    });
-    MainStorage.write("data_pengguna", jsonEncode(response.data));
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        backgroundColor: Colors.lightGreen,
-        content: Text("Data pengguna tersinkronisasi!"),
-        showCloseIcon: true,
-      ),
-    );
   }
 
   @override
@@ -82,14 +90,20 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Layanan'),
       ),
       drawer: UserDrawer(userData: _userData),
-      body: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-          ),
-          itemCount: _layanan.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _layanan[index];
-          }),
+      body: RefreshIndicator(
+        onRefresh: () {
+          setState(() {});
+          return _getUserData();
+        },
+        child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+            ),
+            itemCount: _layanan.length,
+            itemBuilder: (BuildContext context, int index) {
+              return _layanan[index];
+            }),
+      ),
     );
   }
 }
