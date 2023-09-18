@@ -8,12 +8,13 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 class Response {
   String? message;
   dynamic data;
-  String? status;
-  bool get isSuccess => status == "success";
+  dynamic status;
+  bool get isSuccess => status == "success" || status == true;
+  String? errorMessage;
 }
 
 class Rekues {
-  final String baseUrl = "https://asncenter.rembangkab.go.id/asncenter/api/v1/";
+  final String baseUrl = "https://asncenter.rembangkab.go.id/api/v1/";
   String downloadDir = '/storage/emulated/0/Download/ASN';
 
   Rekues() {
@@ -54,14 +55,34 @@ class Rekues {
   Future<Response> postData(
       {String? url,
       Map<String, dynamic>? data,
-      Map<String, String>? header}) async {
+      Map<String, String>? header,
+      bool fileIncluded = false,
+      List<String> listFieldFilename = const [],
+      List<String> listFilename = const []}) async {
     var postResponse = Response();
     try {
-      final response = await http.post(
+      final request = http.MultipartRequest(
+        'POST',
         Uri.parse("$baseUrl$url"),
-        headers: header,
-        body: data,
       );
+
+      request.headers.addAll(header ?? {});
+      request.fields
+          .addAll(data!.map((key, value) => MapEntry(key, value.toString())));
+
+      if (fileIncluded) {
+        for (var i = 0; i < listFieldFilename.length; i++) {
+          request.files.add(http.MultipartFile(
+            listFieldFilename[i],
+            data[listFieldFilename[i]].readAsBytes().asStream(),
+            data[listFieldFilename[i]].lengthSync(),
+            filename: listFilename[i],
+          ));
+        }
+      }
+
+      final sended = await request.send();
+      final response = await http.Response.fromStream(sended);
 
       Map<String, dynamic> res = jsonDecode(response.body);
 
@@ -71,7 +92,8 @@ class Rekues {
 
       return postResponse;
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("Error: ${e.toString()}");
+      postResponse.errorMessage = e.toString();
       return postResponse;
     }
   }
@@ -129,12 +151,13 @@ class Rekues {
     try {
       String? token = await MainStorage.read("token");
       return await FlutterDownloader.enqueue(
-        url: "$baseUrl$url",
-        headers: {"Authorization": "$token"},
-        savedDir: downloadDir.toString(),
-        showNotification: true,
-        openFileFromNotification: true,
-      ).then((value) {
+              url: "$baseUrl$url",
+              headers: {"Authorization": "$token"},
+              savedDir: downloadDir.toString(),
+              showNotification: true,
+              openFileFromNotification: true,
+              saveInPublicStorage: false)
+          .then((value) {
         debugPrint("Download success $value");
         return true;
       });

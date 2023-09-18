@@ -25,6 +25,13 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    nip.dispose();
+    password.dispose();
+    super.dispose();
+  }
+
   Future<bool> _validateUser(String nip, String password) async {
     try {
       if (nip.isEmpty || password.isEmpty) {
@@ -34,6 +41,7 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         _isLoading = true;
       });
+      
       var map = <String, String>{};
       map['nip'] = nip;
       map['password'] = password;
@@ -53,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = false;
         _errorMsg = null;
       });
+
       MainStorage.write("token", response.data?['access_token']);
       MainStorage.write("nip", response.data?['nip']);
       return true;
@@ -112,19 +121,15 @@ class _LoginPageState extends State<LoginPage> {
                           isDense: true,
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 15, vertical: 15),
-                          suffix: Card(
-                            margin: const EdgeInsets.all(0),
-                            elevation: 0,
-                            child: GestureDetector(
-                              onTap: () => setState(() {
-                                showPassword = !showPassword;
-                              }),
-                              child: Icon(
-                                  !showPassword
-                                      ? Icons.visibility_rounded
-                                      : Icons.visibility_off_rounded,
-                                  size: 25),
-                            ),
+                          suffixIcon: GestureDetector(
+                            onTap: () => setState(() {
+                              showPassword = !showPassword;
+                            }),
+                            child: Icon(
+                                !showPassword
+                                    ? Icons.visibility_rounded
+                                    : Icons.visibility_off_rounded,
+                                size: 25),
                           ),
                           border: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -166,30 +171,6 @@ class _LoginPageState extends State<LoginPage> {
                                   builder: (context) => const HomePage()));
                         }),
                         child: const Text("Login"),
-                      ),
-                      const SizedBox(height: 5),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          side: BorderSide(
-                              width: 2,
-                              color: Theme.of(context).colorScheme.primary),
-                          foregroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          minimumSize: const Size(double.infinity, 50),
-                        ),
-                        onPressed: () => Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const HomePage())),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.home),
-                            SizedBox(width: 5),
-                            Text("Home validation test"),
-                          ],
-                        ),
                       ),
                     ],
                   ),

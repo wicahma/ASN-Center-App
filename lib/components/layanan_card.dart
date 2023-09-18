@@ -33,6 +33,7 @@ class LayananCard extends StatelessWidget {
               Icon(icon, size: 80, color: Colors.lightGreen),
               Text(
                 title,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Colors.black,
                   fontSize: 15,

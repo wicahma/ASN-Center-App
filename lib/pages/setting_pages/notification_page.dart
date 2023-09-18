@@ -16,12 +16,6 @@ class _NotificationPageState extends State<NotificationPage> {
     _seeNotificationPermission();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _seeNotificationPermission();
-  }
-
   void didChangeAppLifecycleState(AppLifecycleState state) {
     debugPrint("state: $state");
     _seeNotificationPermission();
@@ -32,12 +26,13 @@ class _NotificationPageState extends State<NotificationPage> {
     debugPrint("permission: ${permission.isGranted}");
     if (!permission.isGranted) {
       debugPrint("permission not granted");
-      return setState(() {
+      setState(() {
         _status = false;
       });
+      return;
     }
-    debugPrint("permission not granted");
-    return setState(() {
+    debugPrint("permission granted");
+    setState(() {
       _status = true;
     });
   }

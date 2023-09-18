@@ -1,7 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:asn_center_app/logic/http_request.dart';
 import 'package:asn_center_app/logic/storage.dart';
 import 'package:asn_center_app/pages/setting_pages/notification_page.dart';
 import 'package:asn_center_app/pages/user_page.dart';
