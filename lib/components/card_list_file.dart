@@ -1,4 +1,4 @@
-import 'package:asn_center_app/components/modal_webview.dart';
+import 'package:asn_center_app/components/modal_file_view.dart';
 import 'package:asn_center_app/logic/http_request.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -87,12 +87,14 @@ class _CardListFileState extends State<CardListFile> {
                       child: InkWell(
                         onTap: () {
                           showModalBottomSheet(
-                              showDragHandle: true,
+                              showDragHandle: false,
                               isScrollControlled: true,
                               enableDrag: false,
                               context: context,
-                              builder: (context) => ModalWebview(
+                              builder: (context) => ModalFileView(
                                     namaFile: widget.namaFile,
+                                    type: "efile",
+                                    url: "efile/download/${widget.namaFile}",
                                   ));
                         },
                         splashColor: Colors.green,
@@ -159,53 +161,20 @@ class _CardListFileState extends State<CardListFile> {
                           ),
                           const SizedBox(width: 10),
                           IconButton.filled(
-                              iconSize: 25,
                               onPressed: () {
-                                setState(() {
-                                  _isLoading = true;
-                                });
-                                Rekues()
-                                    .downloadEfile(
-                                        url:
-                                            "efile/download/${widget.namaFile}")
-                                    .then((value) {
-                                  setState(() {
-                                    _isLoading = false;
-                                  });
-                                  if (!value) {
-                                    return ScaffoldMessenger.of(context)
-                                        .showSnackBar(
-                                      SnackBar(
-                                        backgroundColor:
-                                            Colors.redAccent.shade200,
-                                        content:
-                                            const Text("Gagal mengunduh file!"),
-                                        showCloseIcon: true,
-                                      ),
-                                    );
-                                  }
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      backgroundColor: Colors.green,
-                                      content: Text(
-                                          "Berhasil mengunduh file ${widget.namaFile}!"),
-                                      showCloseIcon: true,
-                                    ),
-                                  );
-                                });
+                                showModalBottomSheet(
+                                    showDragHandle: false,
+                                    isScrollControlled: true,
+                                    enableDrag: false,
+                                    context: context,
+                                    builder: (context) => ModalFileView(
+                                          namaFile: widget.namaFile,
+                                          type: "efile",
+                                          url:
+                                              "efile/download/${widget.namaFile}",
+                                        ));
                               },
-                              icon: SizedBox(
-                                height: 25,
-                                width: 25,
-                                child: _isLoading
-                                    ? CircularProgressIndicator(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .background,
-                                        strokeWidth: 1,
-                                      )
-                                    : const Icon(Icons.download, size: 25),
-                              ))
+                              icon: const Icon(Icons.remove_red_eye_rounded))
                         ],
                       )
                     ],
