@@ -3,6 +3,7 @@ import 'package:asn_center_app/pages/login_page.dart';
 import 'package:asn_center_app/pages/setting_pages/setting_page.dart';
 import 'package:asn_center_app/pages/user_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class UserDrawer extends StatelessWidget {
   final Map<String, dynamic>? userData;
@@ -128,6 +129,7 @@ class UserDrawer extends StatelessWidget {
                                                         Color>(Colors.red)),
                                             onPressed: () => {
                                                   MainStorage.deleteAll(),
+                                                  Navigator.pop(context),
                                                   Navigator.pushReplacement(
                                                       context,
                                                       MaterialPageRoute(
