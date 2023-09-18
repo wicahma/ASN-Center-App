@@ -7,12 +7,14 @@ class DialogInfo extends StatefulWidget {
   final String description;
   final List<String> dataName;
   final List<dynamic> listData;
+  final Function(String id, String nama)? customList;
   const DialogInfo(
       {super.key,
       required this.listData,
       required this.title,
       required this.description,
-      required this.dataName});
+      required this.dataName,
+      this.customList});
 
   @override
   State<DialogInfo> createState() => _DialogInfoState();
@@ -47,8 +49,12 @@ class _DialogInfoState extends State<DialogInfo> {
                     itemBuilder: (context, index) {
                       String nama = widget.listData[index][widget.dataName[0]];
                       String id = widget.listData[index][widget.dataName[1]];
-                      String necessaryData =
-                          widget.listData[index][widget.dataName[2]].toString();
+                      String? necessaryData;
+                      if (widget.listData[0].length > 2) {
+                        necessaryData = widget.listData[index]
+                                [widget.dataName[2]]
+                            .toString();
+                      }
                       return InkWell(
                         onLongPress: () async {
                           debugPrint("key: $id");
@@ -63,21 +69,24 @@ class _DialogInfoState extends State<DialogInfo> {
                             ),
                           );
                         },
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 0),
-                          title: Text(
-                            nama,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle:
-                              Text("${widget.dataName[2]} - $necessaryData"),
-                          leading: Text(
-                            id,
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                        ),
+                        child: widget.customList != null
+                            ? widget.customList!(id, nama)
+                            : ListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 0),
+                                title: Text(
+                                  nama,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                subtitle: Text(
+                                    "${widget.dataName[2]} - $necessaryData"),
+                                leading: Text(
+                                  id,
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
                       );
                     },
                   ),
